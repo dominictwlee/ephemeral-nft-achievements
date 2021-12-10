@@ -53,6 +53,7 @@ pub struct CreateAchievement<'info> {
         ],
         payer = granter_authority,
         bump = args.bump,
+        space = Achievement::max_space()
     )]
     pub achievement: Account<'info, Achievement>,
 

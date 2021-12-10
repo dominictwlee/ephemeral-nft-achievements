@@ -25,7 +25,7 @@ pub struct Achievement {
 
 impl MaxSpace for Achievement {
     fn max_space() -> usize {
-        32 + 32 + 32 + 4 + 1 + 8 + 1 + 1 + MAX_URI_LENGTH
+        (32 * 4) + 4 + 1 + 8 + 8 + 3 + MAX_URI_LENGTH
     }
 }
 

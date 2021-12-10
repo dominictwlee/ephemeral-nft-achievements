@@ -43,43 +43,39 @@ describe("ephemeral-nft-achievements", () => {
     );
   });
 
-  it("testing", async () => {
-    console.log(program, "PROGRAM");
-    console.log(nodeWallet.secretKey);
+  it("creates an achievement", async () => {
+    console.log("public", mint.publicKey);
 
-    expect(true).to.be.true;
+    const tx = await program.rpc.createAchievement(
+      {
+        tier: { major: {} } as never,
+        validityLength: new anchor.BN(secs("1y")),
+        uri: "www.some-resource-link.com",
+        bump,
+        maxTransferCount: 1,
+      },
+      {
+        accounts: {
+          achievement,
+          mint: mint.publicKey,
+          granter,
+          recipient,
+          granterAuthority: granter,
+          sysvarRent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          sysvarClock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+      }
+    );
+    const currentAchievement = await program.account.achievement.fetch(
+      achievement
+    );
+    expect(currentAchievement.granter.equals(granter)).to.be.true;
+    expect(currentAchievement.recipient.equals(recipient)).to.be.true;
+    expect(currentAchievement.currentOwner.equals(recipient)).to.be.true;
+    expect(currentAchievement.mint.equals(mint.publicKey)).to.be.true;
+    expect(Object.keys(currentAchievement.tier)[0]).to.be.equal("major");
+    expect(currentAchievement.bump).to.equal(bump);
   });
-  // it("creates an achievement", async () => {
-  //   const tx = await program.rpc.createAchievement(
-  //     {
-  //       tier: { major: {} } as never,
-  //       validityLength: new anchor.BN(secs("1y")),
-  //       uri: "www.some-resource-link.com",
-  //       bump: achievementBump,
-  //       maxTransferCount: 1,
-  //     },
-  //     {
-  //       accounts: {
-  //         achievement,
-  //         mint,
-  //         granter,
-  //         recipient,
-  //         granterAuthority: granter,
-  //         sysvarRent: anchor.web3.SYSVAR_RENT_PUBKEY,
-  //         sysvarClock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-  //         tokenProgram: TOKEN_PROGRAM_ID,
-  //         systemProgram: anchor.web3.SystemProgram.programId,
-  //       },
-  //     }
-  //   );
-  //   const currentAchievement = await program.account.achievement.fetch(
-  //     achievement
-  //   );
-  //   expect(currentAchievement.granter.equals(granter)).to.be.true;
-  //   expect(currentAchievement.recipient.equals(recipient)).to.be.true;
-  //   expect(currentAchievement.currentOwner.equals(recipient)).to.be.true;
-  //   expect(currentAchievement.mint.equals(mint)).to.be.true;
-  //   expect(Object.keys(currentAchievement.tier)[0]).to.be.equal("major");
-  //   expect(currentAchievement.bump).to.equal(achievementBump);
-  // });
 });
