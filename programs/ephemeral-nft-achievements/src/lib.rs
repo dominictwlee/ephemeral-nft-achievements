@@ -3,19 +3,35 @@ mod util;
 
 use crate::state::*;
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token};
+use anchor_spl::token::{InitializeMint, Token};
 
 declare_id!("AHQXfwGoMKFrhom1ZbkMStrFQkkZhqr31Xe7MF4bjtka");
 
 #[program]
 pub mod ephemeral_nft_achievements {
+
+    use anchor_spl::token::initialize_mint;
+
     use super::*;
     pub fn create_achievement(
         ctx: Context<CreateAchievement>,
         args: CreateAchievementArgs,
     ) -> ProgramResult {
+        let cpi_context_initialize_mint = ctx.accounts.to_cpi_contexts();
         let achievement = &mut ctx.accounts.achievement;
         let current_timestamp = ctx.accounts.sysvar_clock.unix_timestamp;
+
+        util::create_account(
+            &anchor_spl::token::ID,
+            &ctx.accounts.mint,
+            &ctx.accounts.sysvar_rent,
+            &ctx.accounts.system_program,
+            &ctx.accounts.granter_authority,
+            anchor_spl::token::Mint::LEN,
+            None,
+        )?;
+
+        initialize_mint(cpi_context_initialize_mint, 0, &achievement.key(), None)?;
 
         achievement.granter = ctx.accounts.granter.key();
         achievement.recipient = ctx.accounts.recipient.key();
@@ -57,7 +73,8 @@ pub struct CreateAchievement<'info> {
     )]
     pub achievement: Account<'info, Achievement>,
 
-    pub mint: Account<'info, Mint>,
+    #[account(mut, signer)]
+    pub mint: AccountInfo<'info>,
 
     pub granter: AccountInfo<'info>,
     pub recipient: AccountInfo<'info>,
@@ -75,4 +92,18 @@ pub struct CreateAchievementArgs {
     pub uri: String,
     pub bump: u8,
     pub max_transfer_count: Option<u8>,
+}
+
+impl<'a, 'b, 'c, 'info> CreateAchievement<'info> {
+    fn to_cpi_contexts(&self) -> CpiContext<'a, 'b, 'c, 'info, InitializeMint<'info>> {
+        let cpi_accounts_initialize_mint = InitializeMint {
+            mint: self.mint.to_account_info().clone(),
+            rent: self.sysvar_rent.to_account_info().clone(),
+        };
+
+        CpiContext::new(
+            self.token_program.to_account_info().clone(),
+            cpi_accounts_initialize_mint,
+        )
+    }
 }

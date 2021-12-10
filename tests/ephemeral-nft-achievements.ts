@@ -11,41 +11,21 @@ describe("ephemeral-nft-achievements", () => {
   const program = anchor.workspace
     .EphemeralNftAchievements as Program<EphemeralNftAchievements>;
   const granter = provider.wallet.publicKey;
-  const nodeWallet = anchor.Wallet.local().payer;
-  let mint: Token;
+  let mint = anchor.web3.Keypair.generate();
   let achievement: anchor.web3.PublicKey;
   let bump: number;
   const recipient = anchor.web3.Keypair.generate().publicKey;
 
   before(async () => {
-    mint = await Token.createMint(
-      provider.connection,
-      nodeWallet,
-      nodeWallet.publicKey,
-      null,
-      0,
-      TOKEN_PROGRAM_ID
-    );
-
     const achievementPDA = await anchor.web3.PublicKey.findProgramAddress(
       [Buffer.from("achievement"), mint.publicKey.toBuffer()],
       program.programId
     );
     achievement = achievementPDA[0];
     bump = achievementPDA[1];
-
-    await mint.setAuthority(
-      mint.publicKey,
-      achievement,
-      "MintTokens",
-      granter,
-      []
-    );
   });
 
   it("creates an achievement", async () => {
-    console.log("public", mint.publicKey);
-
     const tx = await program.rpc.createAchievement(
       {
         tier: { major: {} } as never,
@@ -66,6 +46,7 @@ describe("ephemeral-nft-achievements", () => {
           tokenProgram: TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId,
         },
+        signers: [mint],
       }
     );
     const currentAchievement = await program.account.achievement.fetch(
