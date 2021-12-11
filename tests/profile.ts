@@ -4,7 +4,6 @@ import { Program } from "@project-serum/anchor";
 import { Profile } from "../target/types/profile";
 import { use, expect, should } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { ProfileLayout } from "./util";
 
 should();
 use(chaiAsPromised);
@@ -13,10 +12,10 @@ describe("Profile program", async () => {
   anchor.setProvider(anchor.Provider.env());
   const provider = anchor.getProvider();
   const program = anchor.workspace.Profile as Program<Profile>;
-  const alias = "dummyuser";
+  const name = "dummyuser";
   const detailsUri = "www.some-resource-link.com";
   const [profile, profileBump] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from("profile"), Buffer.from(alias)],
+    [Buffer.from("profile"), Buffer.from(name)],
     program.programId
   );
   const delegate = anchor.web3.Keypair.generate();
@@ -28,7 +27,7 @@ describe("Profile program", async () => {
     await program.rpc
       .create(
         {
-          alias,
+          name,
           detailsUri: invalidUri,
           bump: profileBump,
         },
@@ -43,18 +42,18 @@ describe("Profile program", async () => {
       .should.eventually.be.rejectedWith("URI character length exceeded");
   });
 
-  it("checks character length for alias", async () => {
-    const longAlias = "Z5kRSdM8hbvUmc0Zl1jAZ4prpqi2qWEA";
+  it("checks character length for profile name", async () => {
+    const invalidName = "Z5kRSdM8hbvUmc0Zl1jAZ4prpqi2qWEA";
     const [profile, profileBump] =
       await anchor.web3.PublicKey.findProgramAddress(
-        [Buffer.from("profile"), Buffer.from(longAlias)],
+        [Buffer.from("profile"), Buffer.from(invalidName)],
         program.programId
       );
 
     await program.rpc
       .create(
         {
-          alias: longAlias,
+          name: invalidName,
           detailsUri,
           bump: profileBump,
         },
@@ -66,13 +65,15 @@ describe("Profile program", async () => {
           },
         }
       )
-      .should.eventually.be.rejectedWith("Alias character length exceeded");
+      .should.eventually.be.rejectedWith(
+        "Profile name character length exceeded"
+      );
   });
 
   it("creates a profile", async () => {
     await program.rpc.create(
       {
-        alias,
+        name,
         detailsUri,
         bump: profileBump,
       },
@@ -87,7 +88,7 @@ describe("Profile program", async () => {
 
     const currentProfile = await program.account.profile.fetch(profile);
 
-    expect(currentProfile.alias).to.be.equal(alias);
+    expect(currentProfile.name).to.be.equal(name);
     expect(currentProfile.bump).to.be.equal(profileBump);
     expect(currentProfile.detailsUri).to.be.equal(detailsUri);
     expect(currentProfile.owner.equals(provider.wallet.publicKey)).to.be.true;
@@ -105,7 +106,7 @@ describe("Profile program", async () => {
 
     const currentProfile = await program.account.profile.fetch(profile);
 
-    expect(currentProfile.delegate.toBase58()).to.equal(
+    expect(currentProfile.delegates[0].toBase58()).to.equal(
       delegate.publicKey.toBase58()
     );
   });

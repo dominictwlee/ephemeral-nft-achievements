@@ -6,15 +6,6 @@ export function secs(format: string) {
   return Math.floor(ms(format) / 1000);
 }
 
-export const ProfileLayout = (alias: string, uri: string) =>
-  borsh.struct([
-    borsh.publicKey("owner"),
-    borsh.u8("bump"),
-    borsh.str("alias"),
-    borsh.vec(borsh.publicKey(), "delegates"),
-    borsh.str("details_uri"),
-  ]);
-
 export function publicKeyLayout(property?: string) {
   return BufferLayout.blob(32, property);
 }

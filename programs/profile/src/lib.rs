@@ -1,7 +1,7 @@
 mod error;
 mod state;
 
-use account_util::{MaxSpace, MAX_ALIAS_LENGTH, MAX_URI_LENGTH};
+use account_util::{MaxSpace, MAX_PROFILE_NAME_LENGTH, MAX_URI_LENGTH};
 use anchor_lang::prelude::*;
 use error::ProfileError;
 use state::*;
@@ -16,7 +16,7 @@ pub mod profile {
     pub fn create(ctx: Context<Create>, args: CreateArgs) -> ProgramResult {
         let profile = &mut ctx.accounts.profile;
 
-        profile.alias = args.alias;
+        profile.name = args.name;
         profile.bump = args.bump;
         profile.details_uri = args.details_uri.unwrap_or_default();
         profile.owner = ctx.accounts.owner.key();
@@ -27,7 +27,7 @@ pub mod profile {
     pub fn add_delegate(ctx: Context<AddDelegate>) -> ProgramResult {
         let profile = &mut ctx.accounts.profile;
 
-        profile.delegate = ctx.accounts.delegate.key();
+        profile.delegates.push(ctx.accounts.delegate.key());
 
         Ok(())
     }
@@ -40,7 +40,7 @@ pub struct Create<'info> {
         init,
         seeds = [
             b"profile",
-            args.alias.as_bytes()
+            args.name.as_bytes()
         ],
         payer = owner,
         bump = args.bump,
@@ -53,8 +53,8 @@ pub struct Create<'info> {
 
 impl<'info> Create<'info> {
     pub fn validate(args: &CreateArgs) -> ProgramResult {
-        if args.alias.chars().count() > MAX_ALIAS_LENGTH {
-            return Err(ProfileError::AliasCharLengthExceeded.into());
+        if args.name.chars().count() > MAX_PROFILE_NAME_LENGTH {
+            return Err(ProfileError::ProfileNameCharLengthExceeded.into());
         }
 
         if let Some(uri) = &args.details_uri {
@@ -69,7 +69,7 @@ impl<'info> Create<'info> {
 
 #[derive(Clone, AnchorSerialize, AnchorDeserialize, PartialEq, Debug)]
 pub struct CreateArgs {
-    pub alias: String,
+    pub name: String,
     pub bump: u8,
     pub details_uri: Option<String>,
 }
