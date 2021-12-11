@@ -84,7 +84,7 @@ pub struct CreateAchievement<'info> {
         init,
         seeds = [
             b"achievement",
-            mint.key().to_bytes().as_ref(),
+            mint.key().as_ref(),
 
         ],
         payer = granter_authority,

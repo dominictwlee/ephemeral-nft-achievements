@@ -9,6 +9,7 @@ use std::{convert::TryInto, time::Duration};
 
 pub const ONE_DAY_IN_SECONDS: Duration = Duration::from_secs(86400);
 pub const MAX_PROFILE_NAME_LENGTH: usize = 30;
+pub const MAX_CLAIM_USERNAME_LENGTH: usize = 320;
 pub const MAX_URI_LENGTH: usize = 200;
 
 pub trait MaxSpace {

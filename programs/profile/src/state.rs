@@ -16,3 +16,34 @@ impl MaxSpace for Profile {
         MAX_PROFILE_NAME_LENGTH + 32 + 1 + 184 + MAX_URI_LENGTH
     }
 }
+
+#[account]
+#[derive(Default)]
+pub struct Claim {
+    pub claim_type: ClaimType,
+    pub certifier: Pubkey,
+    pub recipient: Pubkey,
+    pub username: String,
+}
+
+#[account]
+#[derive(Default)]
+pub struct Certifier {
+    pub authority: Pubkey,
+    pub bump: u8,
+    pub claim_type: ClaimType,
+    pub uri: String,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
+pub enum ClaimType {
+    GitHub,
+    Email,
+    Linkedin,
+}
+
+impl Default for ClaimType {
+    fn default() -> Self {
+        ClaimType::Email
+    }
+}
