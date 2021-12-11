@@ -8,7 +8,7 @@ use anchor_lang::{
 use std::{convert::TryInto, time::Duration};
 
 pub const ONE_DAY_IN_SECONDS: Duration = Duration::from_secs(86400);
-pub const MAX_USERNAME_LEN: usize = 39;
+pub const MAX_ALIAS_LENGTH: usize = 30;
 pub const MAX_URI_LENGTH: usize = 200;
 
 pub trait MaxSpace {

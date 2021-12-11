@@ -1,7 +1,5 @@
-use account_util::{MaxSpace, MAX_URI_LENGTH};
+use account_util::{MaxSpace, MAX_ALIAS_LENGTH, MAX_URI_LENGTH};
 use anchor_lang::prelude::*;
-
-const MAX_ALIAS_LENGTH: usize = 50;
 
 #[account]
 #[derive(Default)]
