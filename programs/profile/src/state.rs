@@ -7,7 +7,7 @@ pub struct Profile {
     pub owner: Pubkey,
     pub bump: u8,
     pub alias: String,
-    pub delegates: Vec<Pubkey>,
+    pub delegate: Pubkey,
     pub details_uri: String,
 }
 

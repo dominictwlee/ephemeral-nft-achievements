@@ -23,6 +23,14 @@ pub mod profile {
 
         Ok(())
     }
+
+    pub fn add_delegate(ctx: Context<AddDelegate>) -> ProgramResult {
+        let profile = &mut ctx.accounts.profile;
+
+        profile.delegate = ctx.accounts.delegate.key();
+
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -64,4 +72,13 @@ pub struct CreateArgs {
     pub alias: String,
     pub bump: u8,
     pub details_uri: Option<String>,
+}
+
+#[derive(Accounts)]
+pub struct AddDelegate<'info> {
+    #[account(mut, has_one = owner)]
+    pub profile: Account<'info, Profile>,
+    pub owner: Signer<'info>,
+    #[account(signer)]
+    pub delegate: AccountInfo<'info>,
 }

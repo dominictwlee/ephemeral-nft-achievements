@@ -50,7 +50,7 @@
     snake-case "^3.0.4"
     toml "^3.0.0"
 
-"@project-serum/borsh@^0.2.2":
+"@project-serum/borsh@^0.2.2", "@project-serum/borsh@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@project-serum/borsh/-/borsh-0.2.3.tgz#1d705c5887484cb6a127dd5feff58e90cbfcb558"
   integrity sha512-lH9zEYADZE3cxrgiFym8+jbUE3NM/LH+WOKYcUjs65CT10Q64Hv45bcAAa/phwYk4Tpz0uQ1x+ergFaAoGt67Q==

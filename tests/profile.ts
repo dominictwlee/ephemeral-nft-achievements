@@ -4,6 +4,7 @@ import { Program } from "@project-serum/anchor";
 import { Profile } from "../target/types/profile";
 import { use, expect, should } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { ProfileLayout } from "./util";
 
 should();
 use(chaiAsPromised);
@@ -18,6 +19,7 @@ describe("Profile program", async () => {
     [Buffer.from("profile"), Buffer.from(alias)],
     program.programId
   );
+  const delegate = anchor.web3.Keypair.generate();
 
   it("checks character length for uri", async () => {
     const invalidUri =
@@ -90,4 +92,37 @@ describe("Profile program", async () => {
     expect(currentProfile.detailsUri).to.be.equal(detailsUri);
     expect(currentProfile.owner.equals(provider.wallet.publicKey)).to.be.true;
   });
+
+  it("adds a delegate to profile", async () => {
+    await program.rpc.addDelegate({
+      accounts: {
+        profile,
+        owner: provider.wallet.publicKey,
+        delegate: delegate.publicKey,
+      },
+      signers: [delegate],
+    });
+
+    const currentProfile = await program.account.profile.fetch(profile);
+
+    expect(currentProfile.delegate.toBase58()).to.equal(
+      delegate.publicKey.toBase58()
+    );
+  });
 });
+
+type Unwrap<T> = T extends Promise<infer U>
+  ? U
+  : T extends (...args: any) => Promise<infer U>
+  ? U
+  : T extends (...args: any) => infer U
+  ? U
+  : T;
+
+type AsyncReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => Promise<infer U>
+  ? U
+  : T extends (...args: any) => infer U
+  ? U
+  : any;
