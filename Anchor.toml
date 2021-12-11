@@ -1,5 +1,6 @@
 [programs.localnet]
-ephemeral_nft_achievements = "AHQXfwGoMKFrhom1ZbkMStrFQkkZhqr31Xe7MF4bjtka"
+nft_achievement = "AHQXfwGoMKFrhom1ZbkMStrFQkkZhqr31Xe7MF4bjtka"
+profile = "Gs9xfexZHrVAfSNZLAfaeu8VW8vnhxEzn88PYQQxbGXT"
 
 [registry]
 url = "https://anchor.projectserum.com"

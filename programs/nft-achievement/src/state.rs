@@ -1,6 +1,7 @@
+use account_util::MAX_URI_LENGTH;
 use anchor_lang::prelude::*;
 
-pub const MAX_URI_LENGTH: usize = 200;
+pub const MAX_PROFILE_DELEGATES: u8 = 5;
 
 pub trait MaxSpace {
     fn max_space() -> usize;

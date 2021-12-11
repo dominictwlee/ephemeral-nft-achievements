@@ -3,6 +3,14 @@
 version = 3
 
 [[package]]
+name = "account-util"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
 name = "ahash"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -480,14 +488,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ephemeral-nft-achievements"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
-]
-
-[[package]]
 name = "feature-probe"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -690,6 +690,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "nft-achievement"
+version = "0.1.0"
+dependencies = [
+ "account-util",
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
 name = "num-derive"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -782,6 +791,14 @@ dependencies = [
  "syn",
  "version_check",
  "yansi",
+]
+
+[[package]]
+name = "profile"
+version = "0.1.0"
+dependencies = [
+ "account-util",
+ "anchor-lang",
 ]
 
 [[package]]

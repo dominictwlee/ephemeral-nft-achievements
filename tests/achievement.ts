@@ -1,15 +1,14 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { TOKEN_PROGRAM_ID, Token, AuthorityType } from "@solana/spl-token";
-import { EphemeralNftAchievements } from "../target/types/ephemeral_nft_achievements";
+import { NftAchievement } from "../target/types/nft_achievement";
 import { secs } from "./util";
 import { expect } from "chai";
 
-describe("ephemeral-nft-achievements", () => {
+describe("Achievement program", () => {
   anchor.setProvider(anchor.Provider.env());
   const provider = anchor.getProvider();
-  const program = anchor.workspace
-    .EphemeralNftAchievements as Program<EphemeralNftAchievements>;
+  const program = anchor.workspace.NftAchievement as Program<NftAchievement>;
   const granter = provider.wallet.publicKey;
   let mint = anchor.web3.Keypair.generate();
   let achievement: anchor.web3.PublicKey;
