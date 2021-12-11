@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[error]
-pub enum ProfileError {
+pub enum IdentityError {
     #[msg("Profile name character length exceeded")]
     ProfileNameCharLengthExceeded,
 

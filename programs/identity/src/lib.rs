@@ -3,17 +3,17 @@ mod state;
 
 use account_util::{MaxSpace, MAX_PROFILE_NAME_LENGTH, MAX_URI_LENGTH};
 use anchor_lang::prelude::*;
-use error::ProfileError;
+use error::IdentityError;
 use state::*;
 
-declare_id!("Gs9xfexZHrVAfSNZLAfaeu8VW8vnhxEzn88PYQQxbGXT");
+declare_id!("3U2mqSTuSjj9QkDRT2Wy8o7DAo8iWU2iyJzHfW3W7r5f");
 
 #[program]
-pub mod profile {
+pub mod identity {
     use super::*;
 
-    #[access_control(Create::validate(&args))]
-    pub fn create(ctx: Context<Create>, args: CreateArgs) -> ProgramResult {
+    #[access_control(CreateProfile::validate(&args))]
+    pub fn create_profile(ctx: Context<CreateProfile>, args: CreateProfileArgs) -> ProgramResult {
         let profile = &mut ctx.accounts.profile;
 
         profile.name = args.name;
@@ -34,8 +34,8 @@ pub mod profile {
 }
 
 #[derive(Accounts)]
-#[instruction(args: CreateArgs)]
-pub struct Create<'info> {
+#[instruction(args: CreateProfileArgs)]
+pub struct CreateProfile<'info> {
     #[account(
         init,
         seeds = [
@@ -51,15 +51,15 @@ pub struct Create<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> Create<'info> {
-    pub fn validate(args: &CreateArgs) -> ProgramResult {
+impl<'info> CreateProfile<'info> {
+    pub fn validate(args: &CreateProfileArgs) -> ProgramResult {
         if args.name.chars().count() > MAX_PROFILE_NAME_LENGTH {
-            return Err(ProfileError::ProfileNameCharLengthExceeded.into());
+            return Err(IdentityError::ProfileNameCharLengthExceeded.into());
         }
 
         if let Some(uri) = &args.details_uri {
             if uri.chars().count() > MAX_URI_LENGTH {
-                return Err(ProfileError::URICharLengthExceeded.into());
+                return Err(IdentityError::URICharLengthExceeded.into());
             }
         }
 
@@ -68,7 +68,7 @@ impl<'info> Create<'info> {
 }
 
 #[derive(Clone, AnchorSerialize, AnchorDeserialize, PartialEq, Debug)]
-pub struct CreateArgs {
+pub struct CreateProfileArgs {
     pub name: String,
     pub bump: u8,
     pub details_uri: Option<String>,

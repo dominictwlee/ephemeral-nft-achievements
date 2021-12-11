@@ -1,17 +1,17 @@
 import crypto from "crypto";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { Profile } from "../target/types/profile";
+import { Identity } from "../target/types/identity";
 import { use, expect, should } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
 should();
 use(chaiAsPromised);
 
-describe("Profile program", async () => {
+describe("Identity program", async () => {
   anchor.setProvider(anchor.Provider.env());
   const provider = anchor.getProvider();
-  const program = anchor.workspace.Profile as Program<Profile>;
+  const program = anchor.workspace.Identity as Program<Identity>;
   const name = "dummyuser";
   const detailsUri = "www.some-resource-link.com";
   const [profile, profileBump] = await anchor.web3.PublicKey.findProgramAddress(
@@ -25,7 +25,7 @@ describe("Profile program", async () => {
       "wB2pXL73v9pSOEeUsay0Ud15paqDeBYwiHgB6bNuewbTmPhujPVSt1X4lTQOidgfyUqPzx3K2t2GVCSnss2UOe3QNlfAAno5gbCF9x5fjnG8DjzZBe6uY1ITqiq8HPGxnxBYYrFVAvv7PJFnV4EFLYDxyBMecDnOvDsd50u096cVUAqLkuQuuPKRzOSwKH9n0erMCAhgP";
 
     await program.rpc
-      .create(
+      .createProfile(
         {
           name,
           detailsUri: invalidUri,
@@ -51,7 +51,7 @@ describe("Profile program", async () => {
       );
 
     await program.rpc
-      .create(
+      .createProfile(
         {
           name: invalidName,
           detailsUri,
@@ -71,7 +71,7 @@ describe("Profile program", async () => {
   });
 
   it("creates a profile", async () => {
-    await program.rpc.create(
+    await program.rpc.createProfile(
       {
         name,
         detailsUri,
