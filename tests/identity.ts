@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { Identity } from "../target/types/identity";
@@ -15,12 +14,12 @@ describe("Identity program", async () => {
   const name = "dummyuser";
   const detailsUri = "www.some-resource-link.com";
   const [profile, profileBump] = await anchor.web3.PublicKey.findProgramAddress(
-    [Buffer.from("profile"), Buffer.from(name)],
+    [Buffer.from("profile"), provider.wallet.publicKey.toBuffer()],
     program.programId
   );
   const delegate = anchor.web3.Keypair.generate();
 
-  it("checks character length for uri", async () => {
+  it("checks character length for details uri", async () => {
     const invalidUri =
       "wB2pXL73v9pSOEeUsay0Ud15paqDeBYwiHgB6bNuewbTmPhujPVSt1X4lTQOidgfyUqPzx3K2t2GVCSnss2UOe3QNlfAAno5gbCF9x5fjnG8DjzZBe6uY1ITqiq8HPGxnxBYYrFVAvv7PJFnV4EFLYDxyBMecDnOvDsd50u096cVUAqLkuQuuPKRzOSwKH9n0erMCAhgP";
 
@@ -46,7 +45,7 @@ describe("Identity program", async () => {
     const invalidName = "Z5kRSdM8hbvUmc0Zl1jAZ4prpqi2qWEA";
     const [profile, profileBump] =
       await anchor.web3.PublicKey.findProgramAddress(
-        [Buffer.from("profile"), Buffer.from(invalidName)],
+        [Buffer.from("profile"), provider.wallet.publicKey.toBuffer()],
         program.programId
       );
 
@@ -111,19 +110,3 @@ describe("Identity program", async () => {
     );
   });
 });
-
-type Unwrap<T> = T extends Promise<infer U>
-  ? U
-  : T extends (...args: any) => Promise<infer U>
-  ? U
-  : T extends (...args: any) => infer U
-  ? U
-  : T;
-
-type AsyncReturnType<T extends (...args: any) => any> = T extends (
-  ...args: any
-) => Promise<infer U>
-  ? U
-  : T extends (...args: any) => infer U
-  ? U
-  : any;

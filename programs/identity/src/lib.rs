@@ -6,7 +6,7 @@ use anchor_lang::prelude::*;
 use error::IdentityError;
 use state::*;
 
-declare_id!("3U2mqSTuSjj9QkDRT2Wy8o7DAo8iWU2iyJzHfW3W7r5f");
+declare_id!("9RdbGSLvG3hoYMdFYx2dRuZu5YzEdjnTZF76ZAbGa38C");
 
 #[program]
 pub mod identity {
@@ -20,6 +20,7 @@ pub mod identity {
         profile.bump = args.bump;
         profile.details_uri = args.details_uri.unwrap_or_default();
         profile.owner = ctx.accounts.owner.key();
+        profile.delegates = Vec::with_capacity(5);
 
         Ok(())
     }
@@ -40,7 +41,7 @@ pub struct CreateProfile<'info> {
         init,
         seeds = [
             b"profile",
-            args.name.as_bytes()
+            owner.key().as_ref(),
         ],
         payer = owner,
         bump = args.bump,

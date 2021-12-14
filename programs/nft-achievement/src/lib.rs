@@ -8,7 +8,7 @@ use anchor_spl::{
     token::{initialize_mint, InitializeMint, Mint, MintTo, SetAuthority, Token},
 };
 
-declare_id!("7hHLaiFyPk62YEnFunGEJs9x4L3XPaZXgwEQS6UDdcjm");
+declare_id!("Ca2F3pQ66qNqgBfHBKD8oSXDS8hhQmNraEkHqr8kTB6H");
 
 #[program]
 pub mod nft_achievement {

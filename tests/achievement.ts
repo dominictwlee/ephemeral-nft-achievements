@@ -1,11 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import {
-  TOKEN_PROGRAM_ID,
-  Token,
-  AuthorityType,
-  MintLayout,
-} from "@solana/spl-token";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { NftAchievement } from "../target/types/nft_achievement";
 import { secs } from "./util";
 import { expect } from "chai";
