@@ -19,7 +19,7 @@ pub mod identity {
         profile.name = args.name;
         profile.bump = args.bump;
         profile.details_uri = args.details_uri.unwrap_or_default();
-        profile.owner = ctx.accounts.owner.key();
+        profile.owner = ctx.accounts.sol_did.key();
         profile.delegates = Vec::with_capacity(5);
 
         Ok(())
@@ -32,6 +32,18 @@ pub mod identity {
 
         Ok(())
     }
+
+    pub fn create_certifier(ctx: Context<CreateProfile>, args: CreateProfileArgs) -> ProgramResult {
+        let profile = &mut ctx.accounts.profile;
+
+        profile.name = args.name;
+        profile.bump = args.bump;
+        profile.details_uri = args.details_uri.unwrap_or_default();
+        profile.owner = ctx.accounts.owner.key();
+        profile.delegates = Vec::with_capacity(5);
+
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -41,14 +53,16 @@ pub struct CreateProfile<'info> {
         init,
         seeds = [
             b"profile",
-            owner.key().as_ref(),
+            sol_did.to_account_info().key().as_ref(),
         ],
-        payer = owner,
+        payer = payer,
         bump = args.bump,
         space = Profile::max_space()
     )]
     pub profile: Account<'info, Profile>,
+    pub sol_did: AccountInfo<'info>,
     pub owner: Signer<'info>,
+    pub payer: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
