@@ -10,7 +10,6 @@ pub struct Profile {
     pub email_verified: bool,
     pub linkedin_verified: bool,
     pub name: String,
-    pub delegates: Vec<Pubkey>,
     pub details_uri: String,
 }
 

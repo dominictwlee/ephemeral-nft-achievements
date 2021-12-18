@@ -19,16 +19,7 @@ pub mod identity {
         profile.name = args.name;
         profile.bump = args.bump;
         profile.details_uri = args.details_uri.unwrap_or_default();
-        profile.owner = ctx.accounts.sol_did.key();
-        profile.delegates = Vec::with_capacity(5);
-
-        Ok(())
-    }
-
-    pub fn add_delegate(ctx: Context<AddDelegate>) -> ProgramResult {
-        let profile = &mut ctx.accounts.profile;
-
-        profile.delegates.push(ctx.accounts.delegate.key());
+        profile.owner = ctx.accounts.owner.key();
 
         Ok(())
     }
@@ -40,7 +31,6 @@ pub mod identity {
         profile.bump = args.bump;
         profile.details_uri = args.details_uri.unwrap_or_default();
         profile.owner = ctx.accounts.owner.key();
-        profile.delegates = Vec::with_capacity(5);
 
         Ok(())
     }
@@ -53,14 +43,13 @@ pub struct CreateProfile<'info> {
         init,
         seeds = [
             b"profile",
-            sol_did.to_account_info().key().as_ref(),
+            owner.key().as_ref(),
         ],
         payer = payer,
         bump = args.bump,
         space = Profile::max_space()
     )]
     pub profile: Account<'info, Profile>,
-    pub sol_did: AccountInfo<'info>,
     pub owner: Signer<'info>,
     pub payer: Signer<'info>,
     pub system_program: Program<'info, System>,
@@ -87,13 +76,4 @@ pub struct CreateProfileArgs {
     pub name: String,
     pub bump: u8,
     pub details_uri: Option<String>,
-}
-
-#[derive(Accounts)]
-pub struct AddDelegate<'info> {
-    #[account(mut, has_one = owner)]
-    pub profile: Account<'info, Profile>,
-    pub owner: Signer<'info>,
-    #[account(signer)]
-    pub delegate: AccountInfo<'info>,
 }
