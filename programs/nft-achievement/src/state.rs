@@ -1,8 +1,6 @@
 use account_util::MAX_URI_LENGTH;
 use anchor_lang::prelude::*;
 
-pub const MAX_PROFILE_DELEGATES: u8 = 5;
-
 pub trait MaxSpace {
     fn max_space() -> usize;
 }
@@ -10,7 +8,7 @@ pub trait MaxSpace {
 #[account]
 #[derive(Default)]
 pub struct Achievement {
-    pub granter: Pubkey,
+    pub creator: Pubkey,
     pub recipient: Pubkey,
     pub current_owner: Pubkey,
     pub mint: Pubkey,

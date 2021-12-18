@@ -9,7 +9,7 @@ describe("Achievement program", () => {
   anchor.setProvider(anchor.Provider.env());
   const provider = anchor.getProvider();
   const program = anchor.workspace.NftAchievement as Program<NftAchievement>;
-  const granter = provider.wallet.publicKey;
+  const creator = provider.wallet.publicKey;
   let mint = anchor.web3.Keypair.generate();
   let achievement: anchor.web3.PublicKey;
   let bump: number;
@@ -37,9 +37,9 @@ describe("Achievement program", () => {
         accounts: {
           achievement,
           mint: mint.publicKey,
-          granter,
+          creator,
           recipient,
-          granterAuthority: granter,
+          granterAuthority: creator,
           sysvarRent: anchor.web3.SYSVAR_RENT_PUBKEY,
           sysvarClock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -51,7 +51,7 @@ describe("Achievement program", () => {
     const currentAchievement = await program.account.achievement.fetch(
       achievement
     );
-    expect(currentAchievement.granter.equals(granter)).to.be.true;
+    expect(currentAchievement.creator.equals(creator)).to.be.true;
     expect(currentAchievement.recipient.equals(recipient)).to.be.true;
     expect(currentAchievement.currentOwner.equals(recipient)).to.be.true;
     expect(currentAchievement.mint.equals(mint.publicKey)).to.be.true;
