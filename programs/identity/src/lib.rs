@@ -23,17 +23,6 @@ pub mod identity {
 
         Ok(())
     }
-
-    pub fn create_certifier(ctx: Context<CreateProfile>, args: CreateProfileArgs) -> ProgramResult {
-        let profile = &mut ctx.accounts.profile;
-
-        profile.name = args.name;
-        profile.bump = args.bump;
-        profile.details_uri = args.details_uri.unwrap_or_default();
-        profile.owner = ctx.accounts.owner.key();
-
-        Ok(())
-    }
 }
 
 #[derive(Accounts)]

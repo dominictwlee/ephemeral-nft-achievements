@@ -6,9 +6,6 @@ use anchor_lang::prelude::*;
 pub struct Profile {
     pub owner: Pubkey,
     pub bump: u8,
-    pub github_verified: bool,
-    pub email_verified: bool,
-    pub linkedin_verified: bool,
     pub name: String,
     pub details_uri: String,
 }
@@ -19,20 +16,11 @@ impl MaxSpace for Profile {
     }
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Debug, Clone)]
-pub struct Claim {
-    pub claim_type: ClaimType,
-    pub certifier: Pubkey,
-    pub recipient: Pubkey,
-    pub username: String,
-}
-
 #[account]
 #[derive(Default)]
-pub struct Certifier {
-    pub authority: Pubkey,
-    pub bump: u8,
+pub struct Claim {
     pub claim_type: ClaimType,
+    pub profile: Pubkey,
     pub uri: String,
 }
 
@@ -45,6 +33,6 @@ pub enum ClaimType {
 
 impl Default for ClaimType {
     fn default() -> Self {
-        ClaimType::Email
+        ClaimType::GitHub
     }
 }
