@@ -704,6 +704,7 @@ dependencies = [
  "account-util",
  "anchor-lang",
  "anchor-spl",
+ "spl-token",
 ]
 
 [[package]]

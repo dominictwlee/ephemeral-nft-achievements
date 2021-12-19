@@ -5,8 +5,11 @@ use crate::state::*;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token,
-    token::{initialize_mint, InitializeMint, Mint, MintTo, SetAuthority, Token},
+    token::{
+        initialize_mint, mint_to, set_authority, InitializeMint, Mint, MintTo, SetAuthority, Token,
+    },
 };
+use spl_token::instruction::AuthorityType;
 
 declare_id!("Ca2F3pQ66qNqgBfHBKD8oSXDS8hhQmNraEkHqr8kTB6H");
 
@@ -63,6 +66,10 @@ pub mod nft_achievement {
         let signer_seeds = &[&seeds[..]];
         let (cpi_context_create_associated_token, cpi_context_mint_to, cpi_context_set_authority) =
             ctx.accounts.to_signed_cpi_contexts(signer_seeds);
+
+        associated_token::create(cpi_context_create_associated_token)?;
+        mint_to(cpi_context_mint_to, 1)?;
+        set_authority(cpi_context_set_authority, AuthorityType::MintTokens, None)?;
 
         Ok(())
     }
