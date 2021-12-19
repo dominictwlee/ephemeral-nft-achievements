@@ -8,9 +8,9 @@ pub trait MaxSpace {
 #[account]
 #[derive(Default)]
 pub struct Achievement {
-    pub creator: Pubkey,
+    pub issuer: Pubkey,
     pub recipient: Pubkey,
-    pub current_owner: Pubkey,
+    pub owner: Pubkey,
     pub mint: Pubkey,
     pub tier: Tier,
     pub bump: u8,

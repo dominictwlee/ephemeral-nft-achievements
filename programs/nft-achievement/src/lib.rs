@@ -34,9 +34,8 @@ pub mod nft_achievement {
 
         initialize_mint(cpi_context_initialize_mint, 0, &achievement.key(), None)?;
 
-        achievement.creator = ctx.accounts.creator.key();
-        achievement.recipient = ctx.accounts.recipient.key();
-        achievement.current_owner = ctx.accounts.recipient.key();
+        achievement.issuer = ctx.accounts.issuer.key();
+        achievement.owner = ctx.accounts.issuer.key();
         achievement.mint = ctx.accounts.mint.key();
         achievement.tier = args.tier;
         achievement.bump = args.bump;
@@ -95,7 +94,7 @@ pub struct CreateAchievement<'info> {
     #[account(mut, signer)]
     pub mint: AccountInfo<'info>,
 
-    pub creator: AccountInfo<'info>,
+    pub issuer: AccountInfo<'info>,
     pub recipient: AccountInfo<'info>,
     pub granter_authority: Signer<'info>,
     pub sysvar_rent: Sysvar<'info, Rent>,

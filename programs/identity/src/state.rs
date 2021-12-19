@@ -6,13 +6,14 @@ use anchor_lang::prelude::*;
 pub struct Profile {
     pub owner: Pubkey,
     pub bump: u8,
+    pub achievements_created: u64,
     pub name: String,
     pub details_uri: String,
 }
 
 impl MaxSpace for Profile {
     fn max_space() -> usize {
-        32 + 1 + 3 + MAX_PROFILE_NAME_LENGTH + 184 + MAX_URI_LENGTH
+        32 + 1 + 8 + MAX_PROFILE_NAME_LENGTH + MAX_URI_LENGTH
     }
 }
 
