@@ -6,7 +6,8 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token,
     token::{
-        initialize_mint, mint_to, set_authority, InitializeMint, Mint, MintTo, SetAuthority, Token,
+        initialize_account as initialize_token_account, initialize_mint, mint_to, set_authority,
+        InitializeAccount, InitializeMint, Mint, MintTo, SetAuthority, Token,
     },
 };
 use spl_token::instruction::AuthorityType;
@@ -56,20 +57,37 @@ pub mod nft_achievement {
 
     pub fn grant_achievement(
         ctx: Context<GrantAchievement>,
-        args: GrantAchievementArgs,
+        achievement_bump: u8,
+        token_holding_bump: u8,
     ) -> ProgramResult {
         let seeds = &[
             b"achievement" as &[u8],
             &ctx.accounts.mint.key().to_bytes(),
-            &[args.bump],
+            &[achievement_bump],
         ];
         let signer_seeds = &[&seeds[..]];
-        let (cpi_context_create_associated_token, cpi_context_mint_to, cpi_context_set_authority) =
+        let (cpi_context_initialize_token, cpi_context_mint_to, cpi_context_set_authority) =
             ctx.accounts.to_signed_cpi_contexts(signer_seeds);
 
-        associated_token::create(cpi_context_create_associated_token)?;
-        mint_to(cpi_context_mint_to, 1)?;
-        set_authority(cpi_context_set_authority, AuthorityType::MintTokens, None)?;
+        util::create_account(
+            &anchor_spl::token::ID,
+            &ctx.accounts.token_holding,
+            &ctx.accounts.sysvar_rent,
+            &ctx.accounts.system_program,
+            &ctx.accounts.issuer_authority,
+            anchor_spl::token::TokenAccount::LEN,
+            Some(&[
+                b"achievement_token_holding",
+                ctx.accounts.mint.key().as_ref(),
+                ctx.accounts.recipient.key().as_ref(),
+                &[token_holding_bump],
+            ]),
+        )?;
+
+        // initialize_token_account(cpi_context_initialize_token)?;
+
+        // mint_to(cpi_context_mint_to, 1)?;
+        // set_authority(cpi_context_set_authority, AuthorityType::MintTokens, None)?;
 
         Ok(())
     }
@@ -131,7 +149,7 @@ impl<'a, 'b, 'c, 'info> CreateAchievement<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(args: GrantAchievementArgs)]
+#[instruction(achievement_bump: u8, token_holding_bump: u8)]
 pub struct GrantAchievement<'info> {
     #[account(has_one = mint)]
     pub achievement: Account<'info, Achievement>,
@@ -142,22 +160,13 @@ pub struct GrantAchievement<'info> {
     #[account(mut)]
     pub token_holding: AccountInfo<'info>,
 
-    pub granter: AccountInfo<'info>,
+    pub issuer: AccountInfo<'info>,
     pub recipient: AccountInfo<'info>,
-    pub granter_authority: Signer<'info>,
+    pub issuer_authority: Signer<'info>,
     pub sysvar_rent: Sysvar<'info, Rent>,
     pub sysvar_clock: Sysvar<'info, Clock>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
-}
-
-#[derive(Clone, AnchorSerialize, AnchorDeserialize, PartialEq, Debug)]
-pub struct GrantAchievementArgs {
-    pub tier: Tier,
-    pub validity_length: i64,
-    pub uri: String,
-    pub bump: u8,
-    pub max_transfer_count: Option<u8>,
 }
 
 impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
@@ -165,17 +174,14 @@ impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
         &self,
         signer_seeds: &'a [&'b [&'c [u8]]; 1],
     ) -> (
-        CpiContext<'a, 'b, 'c, 'info, associated_token::Create<'info>>,
+        CpiContext<'a, 'b, 'c, 'info, InitializeAccount<'info>>,
         CpiContext<'a, 'b, 'c, 'info, MintTo<'info>>,
         CpiContext<'a, 'b, 'c, 'info, SetAuthority<'info>>,
     ) {
-        let cpi_create_associated_token_accounts = associated_token::Create {
-            payer: self.granter_authority.to_account_info().clone(),
-            associated_token: self.token_holding.to_account_info().clone(),
+        let cpi_create_token_accounts = InitializeAccount {
+            account: self.token_holding.to_account_info().clone(),
             authority: self.achievement.to_account_info().clone(),
             mint: self.mint.to_account_info().clone(),
-            system_program: self.system_program.to_account_info().clone(),
-            token_program: self.token_program.to_account_info().clone(),
             rent: self.sysvar_rent.to_account_info().clone(),
         };
         let cpi_mint_to_accounts = MintTo {
@@ -188,10 +194,9 @@ impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
             account_or_mint: self.mint.to_account_info().clone(),
         };
 
-        let cpi_create_associated_token = CpiContext::new_with_signer(
+        let cpi_create_token = CpiContext::new(
             self.token_program.to_account_info().clone(),
-            cpi_create_associated_token_accounts,
-            signer_seeds,
+            cpi_create_token_accounts,
         );
 
         let cpi_mint_to = CpiContext::new_with_signer(
@@ -206,6 +211,6 @@ impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
             signer_seeds,
         );
 
-        (cpi_create_associated_token, cpi_mint_to, cpi_set_authority)
+        (cpi_create_token, cpi_mint_to, cpi_set_authority)
     }
 }
