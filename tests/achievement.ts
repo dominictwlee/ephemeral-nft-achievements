@@ -39,7 +39,7 @@ describe("Achievement program", () => {
           mint: mint.publicKey,
           issuer,
           recipient,
-          granterAuthority: issuer,
+          issuerAuthority: issuer,
           sysvarRent: anchor.web3.SYSVAR_RENT_PUBKEY,
           sysvarClock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
           tokenProgram: TOKEN_PROGRAM_ID,

@@ -27,7 +27,7 @@ pub mod nft_achievement {
             &ctx.accounts.mint,
             &ctx.accounts.sysvar_rent,
             &ctx.accounts.system_program,
-            &ctx.accounts.granter_authority,
+            &ctx.accounts.issuer_authority,
             anchor_spl::token::Mint::LEN,
             None,
         )?;
@@ -61,11 +61,8 @@ pub mod nft_achievement {
             &[args.bump],
         ];
         let signer_seeds = &[&seeds[..]];
-        let (
-            cpi_context_create_associated_token,
-            cpi_context_initialize_mint,
-            cpi_context_set_authority,
-        ) = ctx.accounts.to_signed_cpi_contexts(signer_seeds);
+        let (cpi_context_create_associated_token, cpi_context_mint_to, cpi_context_set_authority) =
+            ctx.accounts.to_signed_cpi_contexts(signer_seeds);
 
         Ok(())
     }
@@ -85,7 +82,7 @@ pub struct CreateAchievement<'info> {
             b"achievement",
             mint.key().as_ref(),
         ],
-        payer = granter_authority,
+        payer = issuer_authority,
         bump = args.bump,
         space = Achievement::max_space()
     )]
@@ -96,7 +93,7 @@ pub struct CreateAchievement<'info> {
 
     pub issuer: AccountInfo<'info>,
     pub recipient: AccountInfo<'info>,
-    pub granter_authority: Signer<'info>,
+    pub issuer_authority: Signer<'info>,
     pub sysvar_rent: Sysvar<'info, Rent>,
     pub sysvar_clock: Sysvar<'info, Clock>,
     pub token_program: Program<'info, Token>,
