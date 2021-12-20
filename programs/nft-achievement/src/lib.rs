@@ -84,10 +84,9 @@ pub mod nft_achievement {
             ]),
         )?;
 
-        // initialize_token_account(cpi_context_initialize_token)?;
-
-        // mint_to(cpi_context_mint_to, 1)?;
-        // set_authority(cpi_context_set_authority, AuthorityType::MintTokens, None)?;
+        initialize_token_account(cpi_context_initialize_token)?;
+        mint_to(cpi_context_mint_to, 1)?;
+        set_authority(cpi_context_set_authority, AuthorityType::MintTokens, None)?;
 
         Ok(())
     }
@@ -178,7 +177,7 @@ impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
         CpiContext<'a, 'b, 'c, 'info, MintTo<'info>>,
         CpiContext<'a, 'b, 'c, 'info, SetAuthority<'info>>,
     ) {
-        let cpi_create_token_accounts = InitializeAccount {
+        let cpi_initialize_token_accounts = InitializeAccount {
             account: self.token_holding.to_account_info().clone(),
             authority: self.achievement.to_account_info().clone(),
             mint: self.mint.to_account_info().clone(),
@@ -194,9 +193,10 @@ impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
             account_or_mint: self.mint.to_account_info().clone(),
         };
 
-        let cpi_create_token = CpiContext::new(
+        let cpi_initialize_token = CpiContext::new_with_signer(
             self.token_program.to_account_info().clone(),
-            cpi_create_token_accounts,
+            cpi_initialize_token_accounts,
+            signer_seeds,
         );
 
         let cpi_mint_to = CpiContext::new_with_signer(
@@ -211,6 +211,6 @@ impl<'a, 'b, 'c, 'info> GrantAchievement<'info> {
             signer_seeds,
         );
 
-        (cpi_create_token, cpi_mint_to, cpi_set_authority)
+        (cpi_initialize_token, cpi_mint_to, cpi_set_authority)
     }
 }
