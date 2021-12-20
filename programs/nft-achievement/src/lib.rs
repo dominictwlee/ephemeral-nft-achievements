@@ -85,6 +85,9 @@ pub mod nft_achievement {
         mint_to(cpi_context_mint_to, 1)?;
         set_authority(cpi_context_set_authority, AuthorityType::MintTokens, None)?;
 
+        let achievement = &mut ctx.accounts.achievement;
+        achievement.recipient = ctx.accounts.recipient.key();
+
         Ok(())
     }
 }
@@ -147,7 +150,7 @@ impl<'a, 'b, 'c, 'info> CreateAchievement<'info> {
 #[derive(Accounts)]
 #[instruction(achievement_bump: u8, token_holding_bump: u8)]
 pub struct GrantAchievement<'info> {
-    #[account(has_one = mint)]
+    #[account(mut, has_one = mint)]
     pub achievement: Account<'info, Achievement>,
 
     #[account(mut)]
