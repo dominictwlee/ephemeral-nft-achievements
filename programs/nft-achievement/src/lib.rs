@@ -3,12 +3,9 @@ mod util;
 
 use crate::state::*;
 use anchor_lang::prelude::*;
-use anchor_spl::{
-    associated_token,
-    token::{
-        initialize_account as initialize_token_account, initialize_mint, mint_to, set_authority,
-        InitializeAccount, InitializeMint, Mint, MintTo, SetAuthority, Token,
-    },
+use anchor_spl::token::{
+    initialize_account as initialize_token_account, initialize_mint, mint_to, set_authority,
+    InitializeAccount, InitializeMint, Mint, MintTo, SetAuthority, Token,
 };
 use spl_token::instruction::AuthorityType;
 
