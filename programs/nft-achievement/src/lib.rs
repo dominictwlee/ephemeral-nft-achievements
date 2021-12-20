@@ -108,7 +108,7 @@ pub struct CreateAchievement<'info> {
         ],
         payer = issuer_authority,
         bump = args.bump,
-        space = Achievement::max_space()
+        space = 8 + Achievement::max_space()
     )]
     pub achievement: Account<'info, Achievement>,
 
